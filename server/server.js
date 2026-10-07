@@ -13,7 +13,7 @@ import cors from "cors";
 import threadsRouter from "./routes/threads.js";
 
 // TODO 1: import the PrismaClient singleton you will create in prisma/client.js
-//   import prisma from "./prisma/client.js";
+import prisma from "./prisma/client.js";
 
 const app = express();
 app.use(cors());
@@ -28,9 +28,17 @@ const PORT = 3001;
 //   - console.log a clear "Prisma connected" message
 //   - THEN app.listen(PORT, ...)
 //   A Prisma error here almost always means DATABASE_URL is wrong.
+async function startServer() {
+  try {
+    await prisma.$connect();
+    console.log("✅ Prisma connected");
+    app.listen(PORT, () => {
+      console.log(`✅ Threadbase API running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Error connecting to Prisma:", error);
+  }
+}
 
 // Replace this plain listen() with the connect-then-listen version above:
-app.listen(PORT, () => {
-  console.log(`✅ Threadbase API running on http://localhost:${PORT}`);
-  console.log("⚠️  Prisma is NOT connected yet — complete the TODOs to add it.");
-});
+startServer();
